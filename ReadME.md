@@ -15,3 +15,10 @@ streamlit run app.py
 
 ### Step 3 : Select weights and image you want to use
 ![Streamlit App](./demo.png)
+
+
+#### Bibliography 
+[1] https://github.com/ultralytics/yolov5
+[2] https://towardsdatascience.com/yolo-v5-is-here-b668ce2a4908
+[3] https://blog.roboflow.com/how-to-train-yolov5-on-a-custom-dataset/
+[4] https://colab.research.google.com/github/ultralytics/yolov5/blob/master/tutorial.ipynb#scrollTo=wbvMlHd_QwMG
