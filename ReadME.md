@@ -5,6 +5,7 @@ A step which is not detailled in this project consisted in training weights on c
 
 ### Step 1 : Clone et install requirements
 ```bash
+git clone https://github.com/bgigodeaux/Luggage_Detection/
 pip install - r requirements.txt
 ```
 
