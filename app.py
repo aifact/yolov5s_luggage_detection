@@ -1,46 +1,49 @@
-import numpy as np
-from flask import Flask, request, jsonify, render_template
-import json
-import requests
-from config import *
-from functions import extract_keywords
+import streamlit as st
+import cv2
+import sys
+import os
 
-app = Flask(__name__)
+ROOT_DIR = os.path.abspath('./yolov5/')
+sys.path.append(ROOT_DIR)
 
-TOPIC = 'Data'
-NEWS_API_URL = "http://newsapi.org/v2/everything?q="+TOPIC+"&from=2021-01-01&to=2021-01-29&sortBy=popularity&language=en&apiKey=" + NEWS_API_KEY
-URL = "http://newsapi.org/v2/everything?domains=datasciencecentral&from=2021-01-01&to=2021-01-29&sortBy=popularity&language=en&apiKey=" + NEWS_API_KEY
-NEWS_API_URL_TOP = "https://newsapi.org/v2/top-headlines?q=Data&Science&sortBy=publishedAt&pageSize=100&language=en&apiKey=" + NEWS_API_KEY
+from main_detection import *
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+#Headings for Web Application
+st.title("Yolov5 Object Detection Application - Improved for Abandonned Luggage Detection ")
+st.subheader("What type of weights do you need to use ?")
 
-@app.route('/dashboard/')
-def dashboard():
-    return render_template("dashboard.html")
+#Picking what NLP task you want to do
+option = st.selectbox('Yolov5 Weights',('Small Original Version - Yolov5s', 'Luggage Trained Version - Yolov5s custom')) #option is stored in this variable
 
-@app.route('/api/news/')
-def news():
-    response = requests.get(NEWS_API_URL_TOP)
-    content = json.loads(response.content.decode('utf-8'))
+#Uploader for image files
+image_selector = st.selectbox('Image', ('Image1', 'Image2', 'Image3', 'Image4'))
 
-    if response.status_code != 200:
-        return jsonify({
-            'status': 'error',
-            'message': 'La requête à l\'API météo n\'a pas fonctionné. Voici le message renvoyé par l\'API : {}'.format(content['message'])
-        }), 500
+if image_selector == 'Image1':
+    image_path = './yolov5/inference/images/image1.jpg'
+elif image_selector == 'Image2':
+    image_path = './yolov5/inference/images/image2.jpg'
+elif image_selector == 'Image3':
+    image_path = './yolov5/inference/images/image3.jpg'
+elif image_selector == 'Image4':
+    image_path = './yolov5/inference/images/image4.jpg'
 
-    keywords, articles = extract_keywords(content['articles'])
-        
-    return jsonify({
-      'status': 'ok', 
-      'data': {
-          'keywords': keywords[:200],
-          'articles': articles
-      }
-    })
+if option == 'Small Original Version - Yolov5s':
+    weights = './yolov5/weights/yolov5s.pt'
+else :
+    weights = './yolov5/weights/yolov5s_trained.pt'
+
+#Display results 
+st.header("Original Picture")
+
+image = cv2.imread(image_path)
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+st.image(image, caption='Original Picture')
+
+st.header("Yolov5 Processed Picture")
+
+image_yolo = detect_function(weights,image_path, 640)
+image_yolo = cv2.cvtColor(image_yolo, cv2.COLOR_BGR2RGB)
+st.image(image_yolo, caption='Object Detection Processed Picture')
 
 
-if __name__ =="__main__": 
-    app.run(debug=True)
+
